@@ -10,25 +10,23 @@ using std::cout;
 using std::cin;
 using std::endl;
 
-void initializeGrid(size_t r, size_t c, float ** grid);
-bool isStable(size_t r, size_t c, float ** grid);
-void recalcGrid(size_t r, size_t c, float ** grid, float ** tmp);
-void printGrid(size_t r, size_t c, float ** grid);
-void cleanUp(size_t r, float ** grid);
+void initializeGrid(uint32_t r, uint32_t c, float ** grid);
+bool isStable(uint32_t r, uint32_t c, float e, float ** grid);
+void recalcGrid(uint32_t r, uint32_t c, float ** grid, float ** tmp);
+void printGrid(uint32_t r, uint32_t c, float ** grid);
+void cleanUp(uint32_t r, float ** grid);
 
 int main() {
 	// declare vars
-	int itr = 0;
+	uint32_t itr;
+	float epsilon;
+	uint32_t rows;
+	uint32_t cols;
 
-	size_t rows = 1024;
-	size_t cols = 1024;
-
-	// size_t rows;
-	// size_t cols;
-	// cout << "Input number of rows: ";
-	// cin >> rows;
-	// cout << "Input number of columns: ";
-	// cin >> cols;
+	cin.read(reinterpret_cast<char *>(&itr), sizeof(uint32_t));
+	cin.read(reinterpret_cast<char *>(&epsilon), sizeof(float));
+	cin.read(reinterpret_cast<char *>(&rows), sizeof(uint32_t));
+	cin.read(reinterpret_cast<char *>(&cols), sizeof(uint32_t));
 
 	float ** grid1;
 	float ** grid2;
@@ -43,15 +41,19 @@ int main() {
 
 	// initialize grid
 	initializeGrid(rows, cols, grid1);
-	initializeGrid(rows, cols, grid2);
+	// initializeGrid(rows, cols, grid2);
 
 	// check for stability, and recalc as needed
-	while (!isStable(rows, cols, grid1) && itr < 200) {
+	while (!isStable(rows, cols, epsilon, grid1) && itr < 200) {
 		recalcGrid(rows, cols, grid1, grid2);
 		itr ++;
 	}
 
-	// printGrid(rows, cols, grid1);
+	cout.write(reinterpret_cast<char const *>(&itr), sizeof(uint32_t));
+	cout.write(reinterpret_cast<char const *>(&epsilon), sizeof(float));
+	cout.write(reinterpret_cast<char const *>(&rows), sizeof(uint32_t));
+	cout.write(reinterpret_cast<char const *>(&cols), sizeof(uint32_t));
+	printGrid(rows, cols, grid1);
 
 	// De-allocate memory
 	cleanUp(rows, grid1);
@@ -72,14 +74,12 @@ int main() {
  * @param grid
  *	Dereferenced 2D grid to be initialized
 **/
-void initializeGrid(size_t r, size_t c, float ** grid) {
+void initializeGrid(uint32_t r, uint32_t c, float ** grid) {
+	float tmp_val;
 	for (int i = 0; i < r; i++) {
 		for (int j = 0; j < c; j++) {
-			if (i == 0 || j == 0 || (i == r-1) || (j == c-1)) {
-				grid[i][j] = 0;
-			} else {
-				grid[i][j] = 50;
-			}
+			cin.read(reinterpret_cast<char *>(&tmp_val), sizeof(float));
+			grid[i][j] = tmp_val;
 		}
 	}
 }
@@ -95,13 +95,13 @@ void initializeGrid(size_t r, size_t c, float ** grid) {
  * @return
  *	True if stable, false if unstable
 **/
-bool isStable(size_t r, size_t c, float ** grid) {
+bool isStable(uint32_t r, uint32_t c, float e, float ** grid) {
 	float tmp_val;
 	for (int i = 1; i < r-1; i++) {
 		for (int j = 1; j < c-1; j++) {
 			tmp_val = (grid[i-1][j] + grid[i+1][j] + grid[i][j-1] + grid[i][j+1]);
 			tmp_val = fabs((tmp_val/4) - grid[i][j]) ;
-			if (tmp_val > 0.1) {
+			if (tmp_val > e) {
 				return false;
 			}
 		}
@@ -120,7 +120,7 @@ bool isStable(size_t r, size_t c, float ** grid) {
  * @param tmp
  *	Dereferenced 2D grid to temporarily hold the recalculated values
 **/
-void recalcGrid(size_t r, size_t c, float ** grid, float ** tmp) {
+void recalcGrid(uint32_t r, uint32_t c, float ** grid, float ** tmp) {
 	for (int i = 1; i < r-1; i++) {
 		for (int j = 1; j < c-1; j++) {
 			tmp[i][j] = ((grid[i-1][j] + grid[i+1][j] + grid[i][j-1] + grid[i][j+1])/4);
@@ -143,12 +143,11 @@ void recalcGrid(size_t r, size_t c, float ** grid, float ** tmp) {
  * @param grid
  *	Dereferenced 2D grid
 **/
-void printGrid(size_t r, size_t c, float ** grid) {
+void printGrid(uint32_t r, uint32_t c, float ** grid) {
 	for (int i = 0; i < r; i++) {
 		for (int j = 0; j < c; j++) {
-			cout << grid[i][j] << " ";
+			cout.write(reinterpret_cast<char const *>(&grid[i][j]), sizeof(float));
 		}
-		cout << endl;
 	}
 }
 
@@ -159,7 +158,7 @@ void printGrid(size_t r, size_t c, float ** grid) {
  * @param grid
  *	Dereferenced 2D grid
 **/
-void cleanUp(size_t r, float ** grid) {
+void cleanUp(uint32_t r, float ** grid) {
 	for (int i = 0; i < r; ++i) {
 		delete [] grid[i];
 	}
