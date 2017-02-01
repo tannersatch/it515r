@@ -1,0 +1,6 @@
+#!/bin/bash
+
+echo "$SLURM_ARRAY_TASK_ID" > "$SLURM_ARRAY_JOB_ID.$SLURM_ARRAY_TASK_ID.out"
+echo "$RANDOM" >> "$SLURM_ARRAY_JOB_ID.$SLURM_ARRAY_TASK_ID.out"
+
+exit 0
