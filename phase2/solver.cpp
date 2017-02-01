@@ -41,7 +41,6 @@ int main() {
 
 	// initialize grid
 	initializeGrid(rows, cols, grid1);
-	// initializeGrid(rows, cols, grid2);
 
 	// check for stability, and recalc as needed
 	while (!isStable(rows, cols, epsilon, grid1) && itr < 200) {
@@ -50,16 +49,17 @@ int main() {
 	}
 
 	// human readable test output
-	cout << "Iterator: " << itr << endl;
-	cout << "Epsilon: " << epsilon << endl;
-	cout << "Rows: " << rows << endl;
-	cout << "Columns: " << cols << endl;
+	// cout << "Iterator: " << itr << endl;
+	// cout << "Epsilon: " << epsilon << endl;
+	// cout << "Rows: " << rows << endl;
+	// cout << "Columns: " << cols << endl;
 
-	// cout.write(reinterpret_cast<char const *>(&itr), sizeof(uint32_t));
-	// cout.write(reinterpret_cast<char const *>(&epsilon), sizeof(float));
-	// cout.write(reinterpret_cast<char const *>(&rows), sizeof(uint32_t));
-	// cout.write(reinterpret_cast<char const *>(&cols), sizeof(uint32_t));
-	// printGrid(rows, cols, grid1);
+	// binary output
+	cout.write(reinterpret_cast<char const *>(&itr), sizeof(uint32_t));
+	cout.write(reinterpret_cast<char const *>(&epsilon), sizeof(float));
+	cout.write(reinterpret_cast<char const *>(&rows), sizeof(uint32_t));
+	cout.write(reinterpret_cast<char const *>(&cols), sizeof(uint32_t));
+	printGrid(rows, cols, grid1);
 
 	// De-allocate memory
 	cleanUp(rows, grid1);
@@ -118,6 +118,8 @@ bool isStable(uint32_t r, uint32_t c, float e, float ** grid) {
  *	The number of rows in the 2D grid
  * @param c
  *	The number of columns in the 2D grid
+ * @param e
+ *	The value of epsilon
  * @param grid
  *	Dereferenced 2D grid to be recalculated
  * @param tmp
