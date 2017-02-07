@@ -8,4 +8,8 @@ p2/sixteen.in
 p2/sixteen.out
 p2/sixteen.in.out
 p2/sixteen.out.out
+p3/solver
+p3/binary
+p3/input.bin
+p3/output.bin
 tmp/
