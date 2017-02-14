@@ -15,7 +15,7 @@ module unload compiler_intel/14.0.2
 module load compiler_intel/2017
 
 module load llvm/3.9
-module load compiler_cland/3.5.0
+module load compiler_clang/3.5.0
 
 ### Prepare to build the program
 
