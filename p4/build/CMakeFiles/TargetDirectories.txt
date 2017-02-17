@@ -1,0 +1,4 @@
+/Users/tannersatch/it515r/p3/build/CMakeFiles/rebuild_cache.dir
+/Users/tannersatch/it515r/p3/build/CMakeFiles/edit_cache.dir
+/Users/tannersatch/it515r/p3/build/CMakeFiles/binary.dir
+/Users/tannersatch/it515r/p3/build/CMakeFiles/solver.dir
