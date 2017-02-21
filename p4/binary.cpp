@@ -15,7 +15,7 @@ void initializeGrid(uint32_t r, uint32_t c, float ** grid);
 bool isStable(uint32_t r, uint32_t c, float e, float ** grid);
 void recalcGrid(uint32_t r, uint32_t c, float ** grid, float ** tmp);
 void printGrid(uint32_t r, uint32_t c, float ** grid);
-void cleanUp(uint32_t r, float ** grid);
+void deleteGrid(uint32_t r, float ** grid);
 
 int main() {
 	// declare vars
@@ -59,8 +59,8 @@ int main() {
 	printGrid(rows, cols, grid1);
 
 	// De-allocate memory
-	cleanUp(rows, grid1);
-	cleanUp(rows, grid2);
+	deleteGrid(rows, grid1);
+	deleteGrid(rows, grid2);
 
 	return 0;
 }
@@ -162,7 +162,7 @@ void printGrid(uint32_t r, uint32_t c, float ** grid) {
  * @param grid
  *	Dereferenced 2D grid
 **/
-void cleanUp(uint32_t r, float ** grid) {
+void deleteGrid(uint32_t r, float ** grid) {
 	for (int i = 0; i < r; ++i) {
 		delete [] grid[i];
 	}

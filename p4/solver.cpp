@@ -27,7 +27,8 @@ int main() {
 	float ** grid2;
 
 	// read grid from cin
-	readGrid(cin, itr, epsilon, rows, cols, grid1, grid2);
+	readGrid(cin, itr, epsilon, rows, cols, grid1);
+	cloneGrid(rows, cols, grid1, grid2);
 
 	// check for stability, and recalc as needed
 	while (!isStable(rows, cols, epsilon, grid1) && itr < 200) {
@@ -49,8 +50,8 @@ int main() {
 	printGrid(rows, cols, grid1);
 
 	// De-allocate memory
-	cleanUp(rows, grid1);
-	cleanUp(rows, grid2);
+	deleteGrid(rows, grid1);
+	deleteGrid(rows, grid2);
 
 	return 0;
 }
@@ -100,11 +101,7 @@ void recalcGrid(uint32_t r, uint32_t c, float ** grid, float ** tmp) {
 		}
 	}
 
-	for (uint32_t i = 1; i < r-1; i++) {
-		for (uint32_t j = 1; j < c-1; j++) {
-			grid[i][j] = tmp[i][j];
-		}
-	}
+	copyGrid(r, c, tmp, grid);
 }
 
 /**
@@ -117,10 +114,17 @@ void recalcGrid(uint32_t r, uint32_t c, float ** grid, float ** tmp) {
  *	Dereferenced 2D grid
 **/
 void printGrid(uint32_t r, uint32_t c, float ** grid) {
+	// human readable test output
+	// cout << "Grid: ";
 	for (uint32_t i = 0; i < r; i++) {
 		for (uint32_t j = 0; j < c; j++) {
+			// human readable test output
+			// cout << grid[i][j] << " ";
+
 			cout.write(reinterpret_cast<char const *>(&grid[i][j]), sizeof(float));
 		}
+		// human readable test output
+		// cout << endl;
 	}
 }
 

@@ -10,8 +10,10 @@
 
 using std::istream;
 
-void readGrid(istream &in, uint32_t &iterator, float &epsilon, uint32_t &rows, uint32_t &cols, float **&grid1, float **&grid2);
-void cleanUp(uint32_t r, float **&grid);
+void readGrid(istream &in, uint32_t &iterator, float &epsilon, uint32_t &rows, uint32_t &cols, float **&grid);
+void cloneGrid(uint32_t rows, uint32_t cols, float ** source, float **&target);
+void copyGrid(uint32_t rows, uint32_t cols, float ** source, float **&target);
+void deleteGrid(uint32_t r, float **&grid);
 
 /**
  * Read from stdin and set two grids to be used in calculations
@@ -25,12 +27,10 @@ void cleanUp(uint32_t r, float **&grid);
  *	Reference to the number of rows
  * @param cols
  *	Reference to the number of columns
- * @param grid1
+ * @param grid
  *	Reference to a grid float pointer
- * @param grid2
- *	Reference to a second grid float pointer
 **/
-void readGrid(istream &in, uint32_t &iterator, float &epsilon, uint32_t &rows, uint32_t &cols, float **&grid1, float **&grid2) {
+void readGrid(istream &in, uint32_t &iterator, float &epsilon, uint32_t &rows, uint32_t &cols, float **&grid) {
 	// read in the given binary values
 	in.read(reinterpret_cast<char *>(&iterator), sizeof(uint32_t));
 	in.read(reinterpret_cast<char *>(&epsilon), sizeof(float));
@@ -38,11 +38,9 @@ void readGrid(istream &in, uint32_t &iterator, float &epsilon, uint32_t &rows, u
 	in.read(reinterpret_cast<char *>(&cols), sizeof(uint32_t));
 
 	// allocate memory
-	grid1 = new float * [rows];
-	grid2 = new float * [rows];
-	for (uint32_t i = 0; i < rows; ++i) {
-		grid1[i] = new float [cols];
-		grid2[i] = new float [cols];
+	grid = new float * [rows];
+	for (uint32_t i = 0; i < rows; i++) {
+		grid[i] = new float [cols];
 	}
 
 	// initialize the grids to the given grid
@@ -50,8 +48,48 @@ void readGrid(istream &in, uint32_t &iterator, float &epsilon, uint32_t &rows, u
 	for (uint32_t i = 0; i < rows; i++) {
 		for (uint32_t j = 0; j < cols; j++) {
 			in.read(reinterpret_cast<char *>(&tmp_val), sizeof(float));
-			grid1[i][j] = tmp_val;
-			grid2[i][j] = tmp_val;
+			grid[i][j] = tmp_val;
+		}
+	}
+}
+
+/**
+ * Copy grid data to a new grid
+ * @param rows
+ *	The number of rows in the grid
+ * @param cols
+ *	The number of cols in the grid
+ * @param source
+ *	Pointer to the source grid
+ * @param target
+ *	Reference to the grid to be cloned
+**/
+void cloneGrid(uint32_t rows, uint32_t cols, float ** source, float **&target) {
+	// initialize the grid
+	target = new float * [rows];
+	for (uint32_t i = 0; i < rows; i++) {
+		target[i] = new float [cols];
+	}
+
+	copyGrid(rows, cols, source, target);
+}
+
+/**
+ * Copy grid data to an existing grid
+ * @param rows
+ *	The number of rows in the grid
+ * @param cols
+ *	The number of cols in the grid
+ * @param source
+ *	Pointer to the source grid
+ * @param target
+ *	Reference to the grid to be copied
+**/
+void copyGrid(uint32_t rows, uint32_t cols, float ** source, float **&target) {
+	// initialize the grids to the given grid
+	for (uint32_t i = 0; i < rows; i++) {
+		for (uint32_t j = 0; j < cols; j++) {
+			target[i][j] = source[i][j];
 		}
 	}
 }
@@ -63,7 +101,7 @@ void readGrid(istream &in, uint32_t &iterator, float &epsilon, uint32_t &rows, u
  * @param grid
  *	Dereferenced 2D grid
 **/
-void cleanUp(uint32_t r, float **&grid) {
+void deleteGrid(uint32_t r, float **&grid) {
 	for (int i = 0; i < r; ++i) {
 		delete [] grid[i];
 	}

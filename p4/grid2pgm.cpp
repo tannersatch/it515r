@@ -24,19 +24,18 @@ int main() {
 	uint32_t rows;
 	uint32_t cols;
 
-	float ** grid1;
-	float ** grid2;
+	float ** grid;
 
 	// read grid from cin
-	readGrid(cin, itr, epsilon, rows, cols, grid1, grid2);
+	readGrid(cin, itr, epsilon, rows, cols, grid);
 
 	// find the min and max values in the grid
-	float min = grid1[rows][cols];
-	float max = grid1[rows][cols];
-	for (uint32_t i = 1; i < rows; i++) {
-		for (uint32_t j = 1; j < cols; j++) {
-			max = (grid1[i][j] > max) ? grid1[i][j] : max;
-			min = (grid1[i][j] < min) ? grid1[i][j] : min;
+	float min = grid[0][0];
+	float max = grid[0][0];
+	for (uint32_t i = 0; i < rows; i++) {
+		for (uint32_t j = 0; j < cols; j++) {
+			max = (grid[i][j] > max) ? grid[i][j] : max;
+			min = (grid[i][j] < min) ? grid[i][j] : min;
 		}
 	}
 
@@ -47,14 +46,13 @@ int main() {
 
 	for (uint32_t i = 0; i < rows; i++) {
 		for (uint32_t j = 0; j < cols; j++) {
-			cout << convert(grid1[i][j], min, max) << '\t';
+			cout << convert(grid[i][j], min, max) << '\t';
 		}
 		cout << endl;
 	}
 
 	// De-allocate memory
-	cleanUp(rows, grid1);
-	cleanUp(rows, grid2);
+	deleteGrid(rows, grid);
 
 	return 0;
 }
