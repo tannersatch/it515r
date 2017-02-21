@@ -102,7 +102,7 @@ void copyGrid(uint32_t rows, uint32_t cols, float ** source, float **&target) {
  *	Dereferenced 2D grid
 **/
 void deleteGrid(uint32_t r, float **&grid) {
-	for (int i = 0; i < r; ++i) {
+	for (uint32_t i = 0; i < r; ++i) {
 		delete [] grid[i];
 	}
 	delete [] grid;
