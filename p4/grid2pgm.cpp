@@ -3,7 +3,7 @@
 #include <cstdint>
 #include "grid.h"
 
-#define UINT16_MAX 255
+#define UINT16_MAX 65535
 #define UINT16_MIN 0
 
 using std::cin;
