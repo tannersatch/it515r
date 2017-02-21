@@ -1,5 +1,5 @@
 /**
- * IT 515R - Scientific Computing - Phase 2 Binary Test Input
+ * IT 515R - Scientific Computing - Phase 4 Binary Test Input
  * @author Tanner Satchwell tannersatch@gmail.com
 **/
 

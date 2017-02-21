@@ -1,3 +1,8 @@
+/**
+ * IT 515R - Scientific Computing - Phase 4
+ * @author Tanner Satchwell tannersatch@gmail.com
+**/
+
 #include <iostream>
 #include <algorithm>
 #include <cstdint>
@@ -47,20 +52,25 @@ int main() {
 		cout << endl;
 	}
 
+	// De-allocate memory
+	cleanUp(rows, grid1);
+	cleanUp(rows, grid2);
+
 	return 0;
 }
 
-
+/**
+ * Convert a given value in the grid porportionally based on UINT16_MAX and UINT16_MIN
+ * @param val
+ *	The value to be converted
+ * @param min
+ *	The minimum value in the original grid
+ * @param max
+ *	The maximum value in the original grid
+ * @return
+ *	The converted uint16_t grid value
+**/
 uint16_t convert(float val, float min, float max) {
 	float tmp_val = (val-min)/(max-min) * (UINT16_MAX - UINT16_MIN) + UINT16_MIN;
 	return (uint16_t) tmp_val;
 }
-
-
-/*
-
-[x, y] -> [a, b]
-
-(v-x)/(y-x) * (b-a) + a
-
-*/

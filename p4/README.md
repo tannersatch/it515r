@@ -1,8 +1,8 @@
-## IT 515R - Scientific Computing - Phase 3
+## IT 515R - Scientific Computing - Phase 4
 ### Tanner Satchwell
 ### tannersatch@gmail.com
 
-## Phase 3 Instructions
+## Phase 4 Instructions
 
 ### Load the necessary modules
 
@@ -35,6 +35,14 @@ make
 ### Run solver
 
 ./solver < [BINARY_INPUT] > [BINARY_OUTPUT]
+
+### To generate binary test input
+
+./binary > input.bin
+
+### To generate a pgm image
+
+./grid2pgm < [BINARY_INPUT] > [PGM_OUTPUT].pgm
 
 ### Clean up
 
