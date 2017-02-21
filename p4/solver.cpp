@@ -6,16 +6,15 @@
 #include <iostream>
 #include <cstdint>
 #include <cmath>
+#include "grid.h"
 
 using std::cout;
 using std::cin;
 using std::endl;
 
-void initializeGrid(uint32_t r, uint32_t c, float ** grid);
 bool isStable(uint32_t r, uint32_t c, float e, float ** grid);
 void recalcGrid(uint32_t r, uint32_t c, float ** grid, float ** tmp);
 void printGrid(uint32_t r, uint32_t c, float ** grid);
-void cleanUp(uint32_t r, float ** grid);
 
 int main() {
 	// declare vars
@@ -24,24 +23,11 @@ int main() {
 	uint32_t rows;
 	uint32_t cols;
 
-	cin.read(reinterpret_cast<char *>(&itr), sizeof(uint32_t));
-	cin.read(reinterpret_cast<char *>(&epsilon), sizeof(float));
-	cin.read(reinterpret_cast<char *>(&rows), sizeof(uint32_t));
-	cin.read(reinterpret_cast<char *>(&cols), sizeof(uint32_t));
-
 	float ** grid1;
 	float ** grid2;
 
-	// Allocate memory
-	grid1 = new float * [rows];
-	grid2 = new float * [rows];
-	for (uint32_t i = 0; i < rows; ++i) {
-		grid1[i] = new float [cols];
-		grid2[i] = new float [cols];
-	}
-
-	// initialize grid
-	initializeGrid(rows, cols, grid1);
+	// read grid from cin
+	readGrid(cin, itr, epsilon, rows, cols, grid1, grid2);
 
 	// check for stability, and recalc as needed
 	while (!isStable(rows, cols, epsilon, grid1) && itr < 200) {
@@ -67,25 +53,6 @@ int main() {
 	cleanUp(rows, grid2);
 
 	return 0;
-}
-
-/**
- * Initialize grid
- * @param r
- *	The number of rows in the 2D grid
- * @param c
- *	The number of columns in the 2D grid
- * @param grid
- *	Dereferenced 2D grid to be initialized
-**/
-void initializeGrid(uint32_t r, uint32_t c, float ** grid) {
-	float tmp_val;
-	for (uint32_t i = 0; i < r; i++) {
-		for (uint32_t j = 0; j < c; j++) {
-			cin.read(reinterpret_cast<char *>(&tmp_val), sizeof(float));
-			grid[i][j] = tmp_val;
-		}
-	}
 }
 
 /**
@@ -156,21 +123,6 @@ void printGrid(uint32_t r, uint32_t c, float ** grid) {
 		}
 	}
 }
-
-/**
- * De-allocate memory
- * @param r
- *	The number of rows in the 2D grid
- * @param grid
- *	Dereferenced 2D grid
-**/
-void cleanUp(uint32_t r, float ** grid) {
-	for (uint32_t i = 0; i < r; ++i) {
-		delete [] grid[i];
-	}
-	delete [] grid;
-}
-
 
 
 

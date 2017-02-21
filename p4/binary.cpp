@@ -20,7 +20,7 @@ void cleanUp(uint32_t r, float ** grid);
 int main() {
 	// declare vars
 	uint32_t itr = 0;
-	uint32_t max = 10;
+	uint32_t max = 0;
 	float epsilon = 0.1;
 	uint32_t rows = 1024;
 	uint32_t cols = 1024;
