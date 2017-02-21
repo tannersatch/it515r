@@ -31,7 +31,7 @@ int main() {
 	// Allocate memory
 	grid1 = new float * [rows];
 	grid2 = new float * [rows];
-	for (int i = 0; i < rows; ++i) {
+	for (uint32_t i = 0; i < rows; ++i) {
 		grid1[i] = new float [cols];
 		grid2[i] = new float [cols];
 	}
@@ -75,8 +75,8 @@ int main() {
  *	Dereferenced 2D grid to be initialized
 **/
 void initializeGrid(uint32_t r, uint32_t c, float ** grid) {
-	for (int i = 0; i < r; i++) {
-		for (int j = 0; j < c; j++) {
+	for (uint32_t i = 0; i < r; i++) {
+		for (uint32_t j = 0; j < c; j++) {
 			if (i == 0 || j == 0 || (i == r-1) || (j == c-1)) {
 				grid[i][j] = 0;
 			} else {
@@ -101,8 +101,8 @@ void initializeGrid(uint32_t r, uint32_t c, float ** grid) {
 **/
 bool isStable(uint32_t r, uint32_t c, float e, float ** grid) {
 	float tmp_val;
-	for (int i = 1; i < r-1; i++) {
-		for (int j = 1; j < c-1; j++) {
+	for (uint32_t i = 1; i < r-1; i++) {
+		for (uint32_t j = 1; j < c-1; j++) {
 			tmp_val = (grid[i-1][j] + grid[i+1][j] + grid[i][j-1] + grid[i][j+1]);
 			tmp_val = fabs((tmp_val/4) - grid[i][j]) ;
 			if (tmp_val > e) {
@@ -125,14 +125,14 @@ bool isStable(uint32_t r, uint32_t c, float e, float ** grid) {
  *	Dereferenced 2D grid to temporarily hold the recalculated values
 **/
 void recalcGrid(uint32_t r, uint32_t c, float ** grid, float ** tmp) {
-	for (int i = 1; i < r-1; i++) {
-		for (int j = 1; j < c-1; j++) {
+	for (uint32_t i = 1; i < r-1; i++) {
+		for (uint32_t j = 1; j < c-1; j++) {
 			tmp[i][j] = ((grid[i-1][j] + grid[i+1][j] + grid[i][j-1] + grid[i][j+1])/4);
 		}
 	}
 
-	for (int i = 1; i < r-1; i++) {
-		for (int j = 1; j < c-1; j++) {
+	for (uint32_t i = 1; i < r-1; i++) {
+		for (uint32_t j = 1; j < c-1; j++) {
 			grid[i][j] = tmp[i][j];
 		}
 	}
@@ -148,8 +148,8 @@ void recalcGrid(uint32_t r, uint32_t c, float ** grid, float ** tmp) {
  *	Dereferenced 2D grid
 **/
 void printGrid(uint32_t r, uint32_t c, float ** grid) {
-	for (int i = 0; i < r; i++) {
-		for (int j = 0; j < c; j++) {
+	for (uint32_t i = 0; i < r; i++) {
+		for (uint32_t j = 0; j < c; j++) {
 			cout.write(reinterpret_cast<char const *>(&grid[i][j]), sizeof(float));
 		}
 	}
@@ -163,7 +163,7 @@ void printGrid(uint32_t r, uint32_t c, float ** grid) {
  *	Dereferenced 2D grid
 **/
 void deleteGrid(uint32_t r, float ** grid) {
-	for (int i = 0; i < r; ++i) {
+	for (uint32_t i = 0; i < r; ++i) {
 		delete [] grid[i];
 	}
 	delete [] grid;
