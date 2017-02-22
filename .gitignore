@@ -1,13 +1,2 @@
-p1/scanner
-p2/solver
-p2/binary
-p2/input.bin
-p2/output.bin
-p2/sixteen.tar.gz
-p2/sixteen.in
-p2/sixteen.out
-p2/sixteen.in.out
-p2/sixteen.out.out
-p3/build
-p4/build
-tmp/
+files/
+build/
