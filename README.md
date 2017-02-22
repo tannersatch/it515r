@@ -2,6 +2,12 @@
 ### Tanner Satchwell
 ### tannersatch@gmail.com
 
+## Files
+
+solver.cpp - main phase file
+binary.cpp - a program to generate binary test input
+CMakeLists.txt - cmake file
+
 ## Phase 3 Instructions
 
 ### Load the necessary modules
