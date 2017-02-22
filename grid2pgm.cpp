@@ -8,8 +8,13 @@
 #include <cstdint>
 #include "grid.h"
 
+#ifndef UINT16_MAX
 #define UINT16_MAX 65535
+#endif
+
+#ifndef UINT16_MIN
 #define UINT16_MIN 0
+#endif
 
 using std::cin;
 using std::cout;
