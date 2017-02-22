@@ -1,7 +1,10 @@
-# IT515R - Scientific Computing
+# IT515R - Scientific Computing - Phase2
 
-## Tanner Satchwell
+### Tanner Satchwell
 
-## tannersatch@gmail.com
+### tannersatch@gmail.com
 
-Directories containing coding phases 1 - 8
+## Files
+
+solver.cpp - the main phase 2 file
+binary.cpp - a program to generate binary test input
