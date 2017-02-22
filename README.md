@@ -2,6 +2,14 @@
 ### Tanner Satchwell
 ### tannersatch@gmail.com
 
+## Files
+
+solver.cpp - solver file
+grid.h - contains common grid functions
+grid2pgm.cpp - creates pgm visual of the grid
+binary.cpp - program to generate binary test input
+CMakeLists.txt - cmake file
+
 ## Phase 4 Instructions
 
 ### Load the necessary modules
