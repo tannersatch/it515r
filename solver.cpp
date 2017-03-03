@@ -4,19 +4,40 @@
 **/
 
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <cstdint>
+#include <cstring>
+#include <string>
 #include <cmath>
 #include "grid.h"
 
 using std::cout;
 using std::cin;
 using std::endl;
+using std::string;
+using std::ofstream;
+using std::stringstream;
 
 bool isStable(uint32_t r, uint32_t c, float e, float ** grid);
 void recalcGrid(uint32_t r, uint32_t c, float ** grid, float ** tmp);
 void printGrid(uint32_t r, uint32_t c, float ** grid);
 
-int main() {
+int main(int argc, char *argv[]) {
+	// set up checkpointing
+	bool chkpt;
+	uint32_t chkpt_interval;
+	uint32_t chkpt_counter = 0;
+	if (argc == 2) {
+		chkpt = true;
+		stringstream tmp;
+		tmp << argv[1];
+		tmp >> chkpt_interval;
+	} else {
+		chkpt = false;
+		chkpt_interval = 0;
+	}
+
 	// declare vars
 	uint32_t itr;
 	float epsilon;
@@ -31,9 +52,30 @@ int main() {
 	cloneGrid(rows, cols, grid1, grid2);
 
 	// check for stability, and recalc as needed
-	while (!isStable(rows, cols, epsilon, grid1) && itr < 200) {
+	while (!isStable(rows, cols, epsilon, grid1)) {
 		recalcGrid(rows, cols, grid1, grid2);
 		itr ++;
+		chkpt_counter ++;
+
+		// output the checkpoint file
+		if (chkpt && (chkpt_counter == chkpt_interval)) {
+			chkpt_counter = 0;
+			ofstream chkptfile;
+			stringstream tmp;
+			tmp.str("");
+			tmp << "chkpt." << itr << ".out";
+			chkptfile.open(tmp.str());
+			chkptfile.write(reinterpret_cast<char const *>(&itr), sizeof(uint32_t));
+			chkptfile.write(reinterpret_cast<char const *>(&epsilon), sizeof(float));
+			chkptfile.write(reinterpret_cast<char const *>(&rows), sizeof(uint32_t));
+			chkptfile.write(reinterpret_cast<char const *>(&cols), sizeof(uint32_t));
+			for (uint32_t i = 0; i < rows; i++) {
+				for (uint32_t j = 0; j < cols; j++) {
+					chkptfile.write(reinterpret_cast<char const *>(&grid1[i][j]), sizeof(float));
+				}
+			}
+			chkptfile.close();
+		}
 	}
 
 	// human readable test output
