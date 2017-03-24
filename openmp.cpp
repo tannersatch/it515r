@@ -33,13 +33,16 @@ int main() {
 	float ** grid1;
 	float ** grid2;
 
-	// Allocate memory
+	// allocate memory
 	grid1 = new float * [rows];
 	grid2 = new float * [rows];
 	for (uint32_t i = 0; i < rows; ++i) {
 		grid1[i] = new float [cols];
 		grid2[i] = new float [cols];
 	}
+
+	// make the program parallel
+	#pragma omp parallel
 
 	// initialize grid
 	initializeGrid(rows, cols, grid1);
@@ -81,6 +84,7 @@ int main() {
 **/
 void initializeGrid(uint32_t r, uint32_t c, float ** grid) {
 	float tmp_val;
+	#pragma omp for
 	for (uint32_t i = 0; i < r; i++) {
 		for (uint32_t j = 0; j < c; j++) {
 			cin.read(reinterpret_cast<char *>(&tmp_val), sizeof(float));
@@ -101,17 +105,21 @@ void initializeGrid(uint32_t r, uint32_t c, float ** grid) {
  *	True if stable, false if unstable
 **/
 bool isStable(uint32_t r, uint32_t c, float e, float ** grid) {
-	float tmp_val;
+	float error;
+	#pragma omp for reduction(max:error)
 	for (uint32_t i = 1; i < r-1; i++) {
 		for (uint32_t j = 1; j < c-1; j++) {
-			tmp_val = (grid[i-1][j] + grid[i+1][j] + grid[i][j-1] + grid[i][j+1]);
-			tmp_val = fabs((tmp_val/4) - grid[i][j]) ;
-			if (tmp_val > e) {
-				return false;
-			}
+			float average = (grid[i-1][j] + grid[i+1][j] + grid[i][j-1] + grid[i][j+1]);
+			float value = grid[i][j];
+			error = std::max(error, std::fabs(average - value))
 		}
 	}
-	return true;
+
+	if (error > e) {
+		return false;
+	} else {
+		return true;
+	}
 }
 
 /**
@@ -128,12 +136,14 @@ bool isStable(uint32_t r, uint32_t c, float e, float ** grid) {
  *	Dereferenced 2D grid to temporarily hold the recalculated values
 **/
 void recalcGrid(uint32_t r, uint32_t c, float ** grid, float ** tmp) {
+	#pragma omp for
 	for (uint32_t i = 1; i < r-1; i++) {
 		for (uint32_t j = 1; j < c-1; j++) {
 			tmp[i][j] = ((grid[i-1][j] + grid[i+1][j] + grid[i][j-1] + grid[i][j+1])/4);
 		}
 	}
 
+	#pragma omp for
 	for (uint32_t i = 1; i < r-1; i++) {
 		for (uint32_t j = 1; j < c-1; j++) {
 			grid[i][j] = tmp[i][j];
@@ -166,6 +176,7 @@ void printGrid(uint32_t r, uint32_t c, float ** grid) {
  *	Dereferenced 2D grid
 **/
 void cleanUp(uint32_t r, float ** grid) {
+	#pragma omp for
 	for (uint32_t i = 0; i < r; ++i) {
 		delete [] grid[i];
 	}
