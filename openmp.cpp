@@ -12,11 +12,11 @@ using std::cout;
 using std::cin;
 using std::endl;
 
-void initializeGrid(uint32_t r, uint32_t c, float ** grid);
-bool isStable(uint32_t r, uint32_t c, float e, float ** grid);
-void recalcGrid(uint32_t r, uint32_t c, float ** grid, float ** tmp);
-void printGrid(uint32_t r, uint32_t c, float ** grid);
-void cleanUp(uint32_t r, float ** grid);
+void initializeGrid(uint32_t &r, uint32_t &c, float ** grid);
+bool isStable(uint32_t &r, uint32_t &c, float &e, float &er, float ** grid);
+void recalcGrid(uint32_t &r, uint32_t &c, float ** grid, float ** tmp);
+void printGrid(uint32_t &r, uint32_t &c, float ** grid);
+void cleanUp(uint32_t &r, float ** grid);
 
 int main() {
 	// declare vars
@@ -24,6 +24,7 @@ int main() {
 	float epsilon;
 	uint32_t rows;
 	uint32_t cols;
+	float error = 0.0f;
 
 	cin.read(reinterpret_cast<char *>(&itr), sizeof(uint32_t));
 	cin.read(reinterpret_cast<char *>(&epsilon), sizeof(float));
@@ -48,7 +49,7 @@ int main() {
 	initializeGrid(rows, cols, grid1);
 
 	// check for stability, and recalc as needed
-	while (!isStable(rows, cols, epsilon, grid1) && itr < 200) {
+	while (!isStable(rows, cols, epsilon, error, grid1) && itr < 200) {
 		recalcGrid(rows, cols, grid1, grid2);
 		itr ++;
 	}
@@ -82,7 +83,7 @@ int main() {
  * @param grid
  *	Dereferenced 2D grid to be initialized
 **/
-void initializeGrid(uint32_t r, uint32_t c, float ** grid) {
+void initializeGrid(uint32_t &r, uint32_t &c, float ** grid) {
 	float tmp_val;
 	#pragma omp for
 	for (uint32_t i = 0; i < r; i++) {
@@ -104,14 +105,13 @@ void initializeGrid(uint32_t r, uint32_t c, float ** grid) {
  * @return
  *	True if stable, false if unstable
 **/
-bool isStable(uint32_t r, uint32_t c, float e, float ** grid) {
-	float error;
+bool isStable(uint32_t &r, uint32_t &c, float &e, float &er, float ** grid) {
 	#pragma omp for reduction(max:error)
 	for (uint32_t i = 1; i < r-1; i++) {
 		for (uint32_t j = 1; j < c-1; j++) {
 			float average = (grid[i-1][j] + grid[i+1][j] + grid[i][j-1] + grid[i][j+1]);
 			float value = grid[i][j];
-			error = std::max(error, std::fabs(average - value))
+			error = std::max(error, std::fabs(average - value));
 		}
 	}
 
@@ -135,7 +135,7 @@ bool isStable(uint32_t r, uint32_t c, float e, float ** grid) {
  * @param tmp
  *	Dereferenced 2D grid to temporarily hold the recalculated values
 **/
-void recalcGrid(uint32_t r, uint32_t c, float ** grid, float ** tmp) {
+void recalcGrid(uint32_t &r, uint32_t &c, float ** grid, float ** tmp) {
 	#pragma omp for
 	for (uint32_t i = 1; i < r-1; i++) {
 		for (uint32_t j = 1; j < c-1; j++) {
@@ -160,7 +160,7 @@ void recalcGrid(uint32_t r, uint32_t c, float ** grid, float ** tmp) {
  * @param grid
  *	Dereferenced 2D grid
 **/
-void printGrid(uint32_t r, uint32_t c, float ** grid) {
+void printGrid(uint32_t &r, uint32_t &c, float ** grid) {
 	for (uint32_t i = 0; i < r; i++) {
 		for (uint32_t j = 0; j < c; j++) {
 			cout.write(reinterpret_cast<char const *>(&grid[i][j]), sizeof(float));
@@ -175,7 +175,7 @@ void printGrid(uint32_t r, uint32_t c, float ** grid) {
  * @param grid
  *	Dereferenced 2D grid
 **/
-void cleanUp(uint32_t r, float ** grid) {
+void cleanUp(uint32_t &r, float ** grid) {
 	#pragma omp for
 	for (uint32_t i = 0; i < r; ++i) {
 		delete [] grid[i];
