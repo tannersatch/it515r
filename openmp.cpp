@@ -42,11 +42,11 @@ int main() {
 		grid2[i] = new float [cols];
 	}
 
-	// make the program parallel
-	#pragma omp parallel
-
 	// initialize grid
 	initializeGrid(rows, cols, grid1);
+
+	// make the program parallel
+	#pragma omp parallel
 
 	// check for stability, and recalc as needed
 	while (!isStable(rows, cols, epsilon, error, grid1) && itr < 200) {
@@ -55,17 +55,17 @@ int main() {
 	}
 
 	// human readable test output
-	// cout << "Iterator: " << itr << endl;
+	cout << "Iterator: " << itr << endl;
 	// cout << "Epsilon: " << epsilon << endl;
 	// cout << "Rows: " << rows << endl;
 	// cout << "Columns: " << cols << endl;
 
 	// binary output
-	cout.write(reinterpret_cast<char const *>(&itr), sizeof(uint32_t));
-	cout.write(reinterpret_cast<char const *>(&epsilon), sizeof(float));
-	cout.write(reinterpret_cast<char const *>(&rows), sizeof(uint32_t));
-	cout.write(reinterpret_cast<char const *>(&cols), sizeof(uint32_t));
-	printGrid(rows, cols, grid1);
+	// cout.write(reinterpret_cast<char const *>(&itr), sizeof(uint32_t));
+	// cout.write(reinterpret_cast<char const *>(&epsilon), sizeof(float));
+	// cout.write(reinterpret_cast<char const *>(&rows), sizeof(uint32_t));
+	// cout.write(reinterpret_cast<char const *>(&cols), sizeof(uint32_t));
+	// printGrid(rows, cols, grid1);
 
 	// De-allocate memory
 	cleanUp(rows, grid1);
@@ -85,7 +85,6 @@ int main() {
 **/
 void initializeGrid(uint32_t &r, uint32_t &c, float ** grid) {
 	float tmp_val;
-	#pragma omp for
 	for (uint32_t i = 0; i < r; i++) {
 		for (uint32_t j = 0; j < c; j++) {
 			cin.read(reinterpret_cast<char *>(&tmp_val), sizeof(float));
@@ -106,16 +105,16 @@ void initializeGrid(uint32_t &r, uint32_t &c, float ** grid) {
  *	True if stable, false if unstable
 **/
 bool isStable(uint32_t &r, uint32_t &c, float &e, float &er, float ** grid) {
-	#pragma omp for reduction(max:error)
+	#pragma omp for reduction(max:er)
 	for (uint32_t i = 1; i < r-1; i++) {
 		for (uint32_t j = 1; j < c-1; j++) {
 			float average = (grid[i-1][j] + grid[i+1][j] + grid[i][j-1] + grid[i][j+1]);
 			float value = grid[i][j];
-			error = std::max(error, std::fabs(average - value));
+			er = std::max(er, std::fabs(average - value));
 		}
 	}
 
-	if (error > e) {
+	if (er > e) {
 		return false;
 	} else {
 		return true;
