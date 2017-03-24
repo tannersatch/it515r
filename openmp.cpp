@@ -49,8 +49,9 @@ int main() {
 	#pragma omp parallel
 
 	// check for stability, and recalc as needed
-	while (!isStable(rows, cols, epsilon, error, grid1) && itr < 200) {
+	while (!isStable(rows, cols, epsilon, error, grid1) && itr < 400) {
 		recalcGrid(rows, cols, grid1, grid2);
+		#pragma omp critical
 		itr ++;
 	}
 
@@ -114,6 +115,7 @@ bool isStable(uint32_t &r, uint32_t &c, float &e, float &er, float ** grid) {
 		}
 	}
 
+	#pragma omp single
 	if (er > e) {
 		return false;
 	} else {
@@ -175,7 +177,6 @@ void printGrid(uint32_t &r, uint32_t &c, float ** grid) {
  *	Dereferenced 2D grid
 **/
 void cleanUp(uint32_t &r, float ** grid) {
-	#pragma omp for
 	for (uint32_t i = 0; i < r; ++i) {
 		delete [] grid[i];
 	}
