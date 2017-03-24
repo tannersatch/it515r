@@ -4,15 +4,18 @@ project(Phase3 CXX)
 
 add_executable(solver solver.cpp)
 add_executable(binary binary.cpp)
+add_executable(openmp openmp.cpp)
 
-set_target_properties(solver PROPERTIES
+set_target_properties(solver binary openmp
+	PROPERTIES
 	CXX_STANDARD 14
 	CXX_EXTENSIONS FALSE
 	CXX_STANDARD_REQUIRED TRUE
 )
 
-set_target_properties(binary PROPERTIES
-        CXX_STANDARD 14
-        CXX_EXTENSIONS FALSE
-        CXX_STANDARD_REQUIRED TRUE
+find_package(OpenMP REQUIRED)
+set_target_properties(openmp 
+	PROPERTIES
+    COMPILE_FLAGS	"${OpenMP_CXX_FLAGS}"
+    LINK_FLAGS	"${OpenMP_CXX_FLAGS}"
 )
