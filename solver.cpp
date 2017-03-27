@@ -50,17 +50,17 @@ int main() {
 	}
 
 	// human readable test output
-	// cout << "Iterator: " << itr << endl;
+	cout << "Iterator: " << itr << endl;
 	// cout << "Epsilon: " << epsilon << endl;
 	// cout << "Rows: " << rows << endl;
 	// cout << "Columns: " << cols << endl;
 
 	// binary output
-	cout.write(reinterpret_cast<char const *>(&itr), sizeof(uint32_t));
-	cout.write(reinterpret_cast<char const *>(&epsilon), sizeof(float));
-	cout.write(reinterpret_cast<char const *>(&rows), sizeof(uint32_t));
-	cout.write(reinterpret_cast<char const *>(&cols), sizeof(uint32_t));
-	printGrid(rows, cols, grid1);
+	// cout.write(reinterpret_cast<char const *>(&itr), sizeof(uint32_t));
+	// cout.write(reinterpret_cast<char const *>(&epsilon), sizeof(float));
+	// cout.write(reinterpret_cast<char const *>(&rows), sizeof(uint32_t));
+	// cout.write(reinterpret_cast<char const *>(&cols), sizeof(uint32_t));
+	// printGrid(rows, cols, grid1);
 
 	// De-allocate memory
 	cleanUp(rows, grid1);
@@ -101,16 +101,20 @@ void initializeGrid(uint32_t r, uint32_t c, float ** grid) {
 **/
 bool isStable(uint32_t r, uint32_t c, float e, float ** grid) {
 	float tmp_val;
+	float max = 0.0f;
 	for (uint32_t i = 1; i < r-1; i++) {
 		for (uint32_t j = 1; j < c-1; j++) {
 			tmp_val = (grid[i-1][j] + grid[i+1][j] + grid[i][j-1] + grid[i][j+1]);
 			tmp_val = fabs((tmp_val/4) - grid[i][j]) ;
-			if (tmp_val > e) {
-				return false;
-			}
+			max = (tmp_val > max) ? tmp_val : max;
 		}
 	}
-	return true;
+
+	if (max > e) {
+		return false;
+	} else {
+		return true;
+	}
 }
 
 /**

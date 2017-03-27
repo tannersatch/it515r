@@ -107,15 +107,16 @@ void initializeGrid(uint32_t &r, uint32_t &c, float ** grid) {
 **/
 bool isStable(uint32_t &r, uint32_t &c, float &e, float &er, float ** grid) {
 	#pragma omp for reduction(max:er)
+	float tmp_val;
+	er = 0.0f;
 	for (uint32_t i = 1; i < r-1; i++) {
 		for (uint32_t j = 1; j < c-1; j++) {
-			float average = (grid[i-1][j] + grid[i+1][j] + grid[i][j-1] + grid[i][j+1]);
-			float value = grid[i][j];
-			er = std::max(er, std::fabs(average - value));
+			tmp_val = (grid[i-1][j] + grid[i+1][j] + grid[i][j-1] + grid[i][j+1]);
+			tmp_val = fabs((tmp_val/4) - grid[i][j]) ;
+			er = (tmp_val > er) ? tmp_val : er;
 		}
 	}
 
-	#pragma omp single
 	if (er > e) {
 		return false;
 	} else {
