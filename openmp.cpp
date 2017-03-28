@@ -51,7 +51,7 @@ int main() {
 	// check for stability, and recalc as needed
 	while (!isStable(rows, cols, epsilon, error, grid1) && itr < 400) {
 		recalcGrid(rows, cols, grid1, grid2);
-		#pragma omp critical
+		#pragma omp single
 		itr ++;
 	}
 
@@ -106,9 +106,9 @@ void initializeGrid(uint32_t &r, uint32_t &c, float ** grid) {
  *	True if stable, false if unstable
 **/
 bool isStable(uint32_t &r, uint32_t &c, float &e, float &er, float ** grid) {
-	#pragma omp for reduction(max:er)
 	float tmp_val;
 	er = 0.0f;
+	#pragma omp for reduction(max:er)
 	for (uint32_t i = 1; i < r-1; i++) {
 		for (uint32_t j = 1; j < c-1; j++) {
 			tmp_val = (grid[i-1][j] + grid[i+1][j] + grid[i][j-1] + grid[i][j+1]);
