@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.6)
 
-project(Phase3 CXX)
+project(Phase7 CXX)
 
 add_executable(solver solver.cpp)
 add_executable(binary binary.cpp)
