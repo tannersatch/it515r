@@ -68,7 +68,7 @@ int main() {
 	// cout << "Rows: " << rows << endl;
 	// cout << "Columns: " << cols << endl;
 
-	binary output
+	// binary output
 	cout.write(reinterpret_cast<char const *>(&itr), sizeof(uint32_t));
 	cout.write(reinterpret_cast<char const *>(&epsilon), sizeof(float));
 	cout.write(reinterpret_cast<char const *>(&rows), sizeof(uint32_t));
