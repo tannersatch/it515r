@@ -7,16 +7,19 @@
 #include <cstdint>
 #include <cmath>
 
+#include "barrier.hh"
+
 using std::cout;
 using std::cin;
 using std::endl;
+using fsl::Barrier;
 
 void initializeGrid(uint32_t &r, uint32_t &c, float ** grid);
 void swapGrid(uint32_t &r, uint32_t &c, float ** grid, float ** tmp);
 void printGrid(uint32_t &r, uint32_t &c, float ** grid);
 void cleanUp(uint32_t &r, float ** grid);
 
-int main() {
+int main(void) {
 	// declare vars
 	uint32_t itr;
 	float epsilon;

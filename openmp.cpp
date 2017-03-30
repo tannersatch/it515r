@@ -60,7 +60,6 @@ int main() {
 			}
 		}
 
-		#pragma omp single
 		if (error < epsilon) {
 			break;
 		} 
