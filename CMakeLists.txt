@@ -5,8 +5,9 @@ project(Phase7 CXX)
 add_executable(solver solver.cpp)
 add_executable(binary binary.cpp)
 add_executable(openmp openmp.cpp)
+add_executable(threads threads.cpp)
 
-set_target_properties(solver binary openmp
+set_target_properties(solver binary openmp threads
 	PROPERTIES
 	CXX_STANDARD 14
 	CXX_EXTENSIONS FALSE

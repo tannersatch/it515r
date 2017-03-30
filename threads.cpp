@@ -1,5 +1,5 @@
 /**
- * IT 515R - Scientific Computing - Phase 7
+ * IT 515R - Scientific Computing - Phase 8
  * @author Tanner Satchwell tannersatch@gmail.com
 **/
 
@@ -45,8 +45,8 @@ int main() {
 
 	// check for stability and recalculate
 	do {
-		for (uint32_t i = 1; i < r-1; i++) {
-			for (uint32_t j = 1; j < c-1; j++) {
+		for (uint32_t i = 1; i < rows-1; i++) {
+			for (uint32_t j = 1; j < cols-1; j++) {
 				float average = ((grid1[i-1][j] + grid1[i+1][j] + grid1[i][j-1] + grid1[i][j+1])/4);
 				float value = grid1[i][j];
 
@@ -61,7 +61,7 @@ int main() {
 		} 
 
 		itr ++;
-		swapGrid(grid1, grid2);
+		swapGrid(rows, cols, grid1, grid2);
 		error = 0.0f;
 
 	} while (true);
