@@ -6,6 +6,7 @@
 #include <iostream>
 #include <cstdint>
 #include <cmath>
+#include <sstream>
 #include <threads>
 
 #include "barrier.hh"
@@ -20,7 +21,17 @@ void swapGrid(uint32_t &r, uint32_t &c, float ** grid, float ** tmp);
 void printGrid(uint32_t &r, uint32_t &c, float ** grid);
 void cleanUp(uint32_t &r, float ** grid);
 
-int main(void) {
+int main(int argc, char *argv[]) {
+	// get how many threads
+	uint32_t num_threads;
+	if (argc == 2) {
+		stringstream tmp;
+		tmp << argv[1];
+		tmp >> num_threads;
+	} else {
+		num_threads = 1;
+	}
+
 	// declare vars
 	uint32_t itr;
 	float epsilon;
