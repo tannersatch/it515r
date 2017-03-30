@@ -1,20 +1,18 @@
 /**
- * IT 515R - Scientific Computing - Phase 7
+ * IT 515R - Scientific Computing - Phase 8
  * @author Tanner Satchwell tannersatch@gmail.com
 **/
 
 #include <iostream>
 #include <cstdint>
 #include <cmath>
-#include <omp.h>
 
 using std::cout;
 using std::cin;
 using std::endl;
 
 void initializeGrid(uint32_t &r, uint32_t &c, float ** grid);
-bool isStable(uint32_t &r, uint32_t &c, float &e, float &er, float ** grid);
-void recalcGrid(uint32_t &r, uint32_t &c, float ** grid, float ** tmp);
+void swapGrid(uint32_t &r, uint32_t &c, float ** grid, float ** tmp);
 void printGrid(uint32_t &r, uint32_t &c, float ** grid);
 void cleanUp(uint32_t &r, float ** grid);
 
@@ -45,35 +43,50 @@ int main() {
 	// initialize grid
 	initializeGrid(rows, cols, grid1);
 
-	// make the program parallel
+	// spawn parallel threads
 	#pragma omp parallel
 
-	// check for stability, and recalc as needed
-	while (!isStable(rows, cols, epsilon, error, grid1) && itr < 400) {
-		recalcGrid(rows, cols, grid1, grid2);
+	// check for stability and recalculate
+	do {
+		#pragma omp for reduction(max:error)
+		for (uint32_t i = 1; i < rows-1; i++) {
+			for (uint32_t j = 1; j < cols-1; j++) {
+				float average = ((grid1[i-1][j] + grid1[i+1][j] + grid1[i][j-1] + grid1[i][j+1])/4);
+				float value = grid1[i][j];
 
-		#pragma omp barrier
+				grid2[i][j] = average;
+				float tmp_val = fabs(average-value);
+				error = (tmp_val > error) ? tmp_val : error;
+			}
+		}
+
+		#pragma omp single
+		if (error < epsilon) {
+			break;
+		} 
 
 		#pragma omp single
 		{
 			itr ++;
+			swapGrid(rows, cols, grid1, grid2);
+			error = 0.0f;
 		}
 
-		#pragma omp barrier
-	}
+	} while (true);
+
 
 	// human readable test output
-	// cout << "Iterator: " << itr << endl;
+	cout << "Iterator: " << itr << endl;
 	// cout << "Epsilon: " << epsilon << endl;
 	// cout << "Rows: " << rows << endl;
 	// cout << "Columns: " << cols << endl;
 
 	// binary output
-	cout.write(reinterpret_cast<char const *>(&itr), sizeof(uint32_t));
-	cout.write(reinterpret_cast<char const *>(&epsilon), sizeof(float));
-	cout.write(reinterpret_cast<char const *>(&rows), sizeof(uint32_t));
-	cout.write(reinterpret_cast<char const *>(&cols), sizeof(uint32_t));
-	printGrid(rows, cols, grid1);
+	// cout.write(reinterpret_cast<char const *>(&itr), sizeof(uint32_t));
+	// cout.write(reinterpret_cast<char const *>(&epsilon), sizeof(float));
+	// cout.write(reinterpret_cast<char const *>(&rows), sizeof(uint32_t));
+	// cout.write(reinterpret_cast<char const *>(&cols), sizeof(uint32_t));
+	// printGrid(rows, cols, grid1);
 
 	// De-allocate memory
 	cleanUp(rows, grid1);
@@ -102,57 +115,17 @@ void initializeGrid(uint32_t &r, uint32_t &c, float ** grid) {
 }
 
 /**
- * Check to see if the 2D grid is stable.
+ * A single iteration through the 2D grid to swap from grid1 to grid2.
  * @param r
  *	The number of rows in the 2D grid
  * @param c
  *	The number of columns in the 2D grid
- * @param grid
- *	Dereferenced 2D grid to be evaluated if it is stable
- * @return
- *	True if stable, false if unstable
-**/
-bool isStable(uint32_t &r, uint32_t &c, float &e, float &er, float ** grid) {
-	float tmp_val;
-	er = 0.0f;
-	#pragma omp for reduction(max:er)
-	for (uint32_t i = 1; i < r-1; i++) {
-		for (uint32_t j = 1; j < c-1; j++) {
-			tmp_val = (grid[i-1][j] + grid[i+1][j] + grid[i][j-1] + grid[i][j+1]);
-			tmp_val = fabs((tmp_val/4) - grid[i][j]) ;
-			er = (tmp_val > er) ? tmp_val : er;
-		}
-	}
-
-	if (er > e) {
-		return false;
-	} else {
-		return true;
-	}
-}
-
-/**
- * A single iteration through the 2D grid to recalculated possible stable values.
- * @param r
- *	The number of rows in the 2D grid
- * @param c
- *	The number of columns in the 2D grid
- * @param e
- *	The value of epsilon
  * @param grid
  *	Dereferenced 2D grid to be recalculated
  * @param tmp
  *	Dereferenced 2D grid to temporarily hold the recalculated values
 **/
-void recalcGrid(uint32_t &r, uint32_t &c, float ** grid, float ** tmp) {
-	#pragma omp for
-	for (uint32_t i = 1; i < r-1; i++) {
-		for (uint32_t j = 1; j < c-1; j++) {
-			tmp[i][j] = ((grid[i-1][j] + grid[i+1][j] + grid[i][j-1] + grid[i][j+1])/4);
-		}
-	}
-
-	#pragma omp for
+void swapGrid(uint32_t &r, uint32_t &c, float ** grid, float ** tmp) {
 	for (uint32_t i = 1; i < r-1; i++) {
 		for (uint32_t j = 1; j < c-1; j++) {
 			grid[i][j] = tmp[i][j];
