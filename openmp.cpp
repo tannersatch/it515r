@@ -51,8 +51,15 @@ int main() {
 	// check for stability, and recalc as needed
 	while (!isStable(rows, cols, epsilon, error, grid1) && itr < 400) {
 		recalcGrid(rows, cols, grid1, grid2);
+
+		#pragma omp barrier
+
 		#pragma omp single
-		itr ++;
+		{
+			itr ++;
+		}
+
+		#pragma omp barrier
 	}
 
 	// human readable test output
