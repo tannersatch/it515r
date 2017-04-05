@@ -8,6 +8,7 @@
 #include <cmath>
 #include <sstream>
 #include <thread>
+#include <vector>
 
 #include "barrier.hh"
 
@@ -62,10 +63,10 @@ int main(int argc, char *argv[]) {
 	initializeGrid(rows, cols, grid1);
 
 	// initialize vector of threads
-	vector<thread> threads;
+	vector<thread> threads(0);
 
 	for (uint32_t i = 0; i < num_threads; i++) {
-		threads.emplace_back(new thread i([&, i]() {
+		threads.emplace_back(thread ([&, i]() {
 			do {
 				for (uint32_t i = 1; i < rows-1; i++) {
 					for (uint32_t j = 1; j < cols-1; j++) {
