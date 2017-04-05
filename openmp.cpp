@@ -60,9 +60,13 @@ int main() {
 			}
 		}
 
+		#pragma omp barrier
+
 		if (error < epsilon) {
 			break;
 		} 
+
+		#pragma omp barrier
 
 		#pragma omp single
 		{

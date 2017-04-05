@@ -7,13 +7,16 @@
 #include <cstdint>
 #include <cmath>
 #include <sstream>
-#include <threads>
+#include <thread>
 
 #include "barrier.hh"
 
 using std::cout;
 using std::cin;
 using std::endl;
+using std::stringstream;
+using std::thread;
+using std::vector;
 using fsl::Barrier;
 
 void initializeGrid(uint32_t &r, uint32_t &c, float ** grid);
@@ -58,29 +61,35 @@ int main(int argc, char *argv[]) {
 	// initialize grid
 	initializeGrid(rows, cols, grid1);
 
-	// check for stability and recalculate
-	do {
-		for (uint32_t i = 1; i < rows-1; i++) {
-			for (uint32_t j = 1; j < cols-1; j++) {
-				float average = ((grid1[i-1][j] + grid1[i+1][j] + grid1[i][j-1] + grid1[i][j+1])/4);
-				float value = grid1[i][j];
+	// initialize vector of threads
+	vector<thread> threads;
 
-				grid2[i][j] = average;
-				float tmp_val = fabs(average-value);
-				error = (tmp_val > error) ? tmp_val : error;
-			}
-		}
+	for (uint32_t i = 0; i < num_threads; i++) {
+		threads.emplace_back(new thread i([&, i]() {
+			do {
+				for (uint32_t i = 1; i < rows-1; i++) {
+					for (uint32_t j = 1; j < cols-1; j++) {
+						float average = ((grid1[i-1][j] + grid1[i+1][j] + grid1[i][j-1] + grid1[i][j+1])/4);
+						float value = grid1[i][j];
 
-		if (error < epsilon) {
-			break;
-		} 
+						grid2[i][j] = average;
+						float tmp_val = fabs(average-value);
+						error = (tmp_val > error) ? tmp_val : error;
+					}
+				}
 
-		itr ++;
-		swapGrid(rows, cols, grid1, grid2);
-		error = 0.0f;
+				if (error < epsilon) {
+					break;
+				} 
 
-	} while (true);
+				itr ++;
+				swapGrid(rows, cols, grid1, grid2);
+				error = 0.0f;
 
+			} while (true);
+
+		}));
+	}
 
 	// human readable test output
 	// cout << "Iterator: " << itr << endl;
