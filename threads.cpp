@@ -9,6 +9,7 @@
 #include <sstream>
 #include <thread>
 #include <vector>
+#include <mutex>
 
 #include "barrier.hh"
 
@@ -18,6 +19,7 @@ using std::endl;
 using std::stringstream;
 using std::thread;
 using std::vector;
+using std::mutex;
 using fsl::Barrier;
 
 void initializeGrid(uint32_t &r, uint32_t &c, float ** grid);
@@ -27,7 +29,7 @@ void cleanUp(uint32_t &r, float ** grid);
 
 int main(int argc, char *argv[]) {
 	// get how many threads
-	uint32_t num_threads;
+	size_t num_threads;
 	if (argc == 2) {
 		stringstream tmp;
 		tmp << argv[1];
@@ -42,6 +44,9 @@ int main(int argc, char *argv[]) {
 	uint32_t rows;
 	uint32_t cols;
 	float error = 0.0f;
+	Barrier bar(num_threads);
+	mutex mtx;
+	bool quit = false;
 
 	cin.read(reinterpret_cast<char *>(&itr), sizeof(uint32_t));
 	cin.read(reinterpret_cast<char *>(&epsilon), sizeof(float));
@@ -63,10 +68,10 @@ int main(int argc, char *argv[]) {
 	initializeGrid(rows, cols, grid1);
 
 	// initialize vector of threads
-	vector<thread> threads(0);
+	vector<thread> threads;
 
-	for (uint32_t i = 0; i < num_threads; i++) {
-		threads.emplace_back(thread ([&, i]() {
+	for (uint32_t t = 0; t < num_threads; t++) {
+		threads.emplace_back(thread ([&, t]() {
 			do {
 				for (uint32_t i = 1; i < rows-1; i++) {
 					for (uint32_t j = 1; j < cols-1; j++) {
@@ -75,35 +80,56 @@ int main(int argc, char *argv[]) {
 
 						grid2[i][j] = average;
 						float tmp_val = fabs(average-value);
+
+						mtx.lock();
 						error = (tmp_val > error) ? tmp_val : error;
+						mtx.unlock();
 					}
 				}
 
-				if (error < epsilon) {
-					break;
-				} 
+				bar.wait();
 
-				itr ++;
-				swapGrid(rows, cols, grid1, grid2);
-				error = 0.0f;
+				if (t == 0) {
+					if (error < epsilon) {
+						quit = true;
+					} 
+				}
+
+				bar.wait();
+
+				if (quit) {
+					break;
+				}
+
+				if (t == 0) {
+					itr ++;
+					swapGrid(rows, cols, grid1, grid2);
+					error = 0.0f;
+				}
+
+				bar.wait();
 
 			} while (true);
 
 		}));
 	}
 
+	for (uint32_t t = 0; t < num_threads; t++) {
+		threads.at(t).join();
+	}
+
 	// human readable test output
-	cout << "Iterator: " << itr << endl;
+	// cout << "Iterator: " << itr << endl;
 	// cout << "Epsilon: " << epsilon << endl;
 	// cout << "Rows: " << rows << endl;
 	// cout << "Columns: " << cols << endl;
 
 	// binary output
-	// cout.write(reinterpret_cast<char const *>(&itr), sizeof(uint32_t));
-	// cout.write(reinterpret_cast<char const *>(&epsilon), sizeof(float));
-	// cout.write(reinterpret_cast<char const *>(&rows), sizeof(uint32_t));
-	// cout.write(reinterpret_cast<char const *>(&cols), sizeof(uint32_t));
-	// printGrid(rows, cols, grid1);
+	cout.write(reinterpret_cast<char const *>(&itr), sizeof(uint32_t));
+	cout.write(reinterpret_cast<char const *>(&epsilon), sizeof(float));
+	cout.write(reinterpret_cast<char const *>(&rows), sizeof(uint32_t));
+	cout.write(reinterpret_cast<char const *>(&cols), sizeof(uint32_t));
+	printGrid(rows, cols, grid1);
 
 	// De-allocate memory
 	cleanUp(rows, grid1);

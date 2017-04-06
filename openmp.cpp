@@ -75,21 +75,23 @@ int main() {
 			error = 0.0f;
 		}
 
+		#pragma omp barrier
+
 	} while (true);
 
 
 	// human readable test output
-	cout << "Iterator: " << itr << endl;
+	// cout << "Iterator: " << itr << endl;
 	// cout << "Epsilon: " << epsilon << endl;
 	// cout << "Rows: " << rows << endl;
 	// cout << "Columns: " << cols << endl;
 
 	// binary output
-	// cout.write(reinterpret_cast<char const *>(&itr), sizeof(uint32_t));
-	// cout.write(reinterpret_cast<char const *>(&epsilon), sizeof(float));
-	// cout.write(reinterpret_cast<char const *>(&rows), sizeof(uint32_t));
-	// cout.write(reinterpret_cast<char const *>(&cols), sizeof(uint32_t));
-	// printGrid(rows, cols, grid1);
+	cout.write(reinterpret_cast<char const *>(&itr), sizeof(uint32_t));
+	cout.write(reinterpret_cast<char const *>(&epsilon), sizeof(float));
+	cout.write(reinterpret_cast<char const *>(&rows), sizeof(uint32_t));
+	cout.write(reinterpret_cast<char const *>(&cols), sizeof(uint32_t));
+	printGrid(rows, cols, grid1);
 
 	// De-allocate memory
 	cleanUp(rows, grid1);

@@ -15,6 +15,7 @@ set_target_properties(solver binary openmp threads
 )
 
 find_package(OpenMP REQUIRED)
+message("Flags: ${OpenMP_CXX_FLAGS}")
 set_target_properties(openmp 
 	PROPERTIES
 	COMPILE_FLAGS	"${OpenMP_CXX_FLAGS}"
@@ -22,6 +23,7 @@ set_target_properties(openmp
 )
 
 find_package(Threads REQUIRED)
+message("Flags: ${CMAKE_THREAD_LIBS_INIT}")
 set_target_properties(threads
 	PROPERTIES
 	LINK_FLAGS "${CMAKE_THREAD_LIBS_INIT}"
